@@ -1,0 +1,115 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: #FAF9F6;
+    --foreground: #1A1A1A;
+    --card: #ffffff;
+    --card-border: #e2e8f0;
+    --accent: #E05058;
+    --accent-hover: #c83c44;
+  }
+
+  body {
+    @apply bg-brand-warm text-brand-dark min-h-screen font-sans;
+  }
+}
+
+.brand-btn-glow {
+  box-shadow: 0 0 0 2.5px #ffffff, 0 0 0 5px #E05058;
+}
+
+/* Scrollbar customization */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Custom animations for AI Creator progress tracking */
+@keyframes pulse-slow {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+  50% {
+    transform: scale(1.03);
+    opacity: 1;
+  }
+}
+
+.animate-pulse-slow {
+  animation: pulse-slow 3s infinite ease-in-out;
+}
+
+/* Floating animation for subtle micro-interactions */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+.animate-float {
+  animation: float 4s ease-in-out infinite;
+}
+
+/* Custom print styles to make the question paper print like a real exam sheet */
+@media print {
+  body {
+    background: white !important;
+    color: black !important;
+    font-size: 11pt !important;
+    padding: 0 !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* Hide navigation, toolbars, sidebars, buttons */
+  header, footer, nav, button, .action-bar, .no-print, [role="navigation"], aside {
+    display: none !important;
+  }
+
+  /* Remove scrollbars, margins, padding, and positioning constraints on printable content */
+  .print-container {
+    box-shadow: none !important;
+    border: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    max-width: 100% !important;
+    position: absolute !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 100% !important;
+  }
+
+  .print-page-break {
+    page-break-before: always;
+  }
+  
+  /* Ensure text is dark and fully visible */
+  p, span, h1, h2, h3, h4, input, textarea {
+    color: #000000 !important;
+  }
+
+  /* Hide placeholder inputs border during printing, show values only */
+  input::placeholder {
+    color: transparent !important;
+  }
+  input {
+    border-bottom: 1px solid #000 !important;
+  }
+}
