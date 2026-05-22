@@ -3,6 +3,16 @@ import fs from 'fs';
 import path from 'path';
 import { IAssignment } from '../models/Assignment';
 
+const cleanText = (text: string) => {
+  if (!text) return '';
+  return text
+    .replace(/[•]/g, '-')
+    .replace(/[“”]/g, '"')
+    .replace(/[‘’]/g, "'")
+    .replace(/[–—]/g, '-')
+    .replace(/[^\x00-\x7F]/g, ''); // Strip remaining non-ASCII to prevent PDFKit rendering bugs
+};
+
 /**
  * Generates a clean, exam-style PDF for a given assignment.
  * Returns the relative static URL to the generated PDF.
@@ -23,7 +33,7 @@ export const generateAssignmentPDF = (assignment: IAssignment): Promise<string> 
       doc.pipe(writeStream);
 
       // 1. Exam Header / Logo
-      doc.fontSize(22).font('Helvetica-Bold').fillColor('#1e293b').text(assignment.title.toUpperCase(), { align: 'center' });
+      doc.fontSize(22).font('Helvetica-Bold').fillColor('#1e293b').text(cleanText(assignment.title).toUpperCase(), { align: 'center' });
       doc.moveDown(0.3);
 
       // 2. Exam Sub-Header (Marks & Time/Date)
@@ -33,9 +43,19 @@ export const generateAssignmentPDF = (assignment: IAssignment): Promise<string> 
         day: 'numeric'
       });
       
+      let timeString = '2 HOURS';
+      if (assignment.additionalInstructions) {
+        const timeMatch = assignment.additionalInstructions.match(/(\d+(?:\.\d+)?)\s*hours?/i);
+        if (timeMatch) {
+          timeString = `${timeMatch[1]} HOURS`;
+        }
+      }
+      
       const currentY = doc.y;
-      doc.fontSize(10).font('Helvetica-Bold').fillColor('#475569').text(`DATE: ${formattedDate}`, 50, currentY);
-      doc.fontSize(10).font('Helvetica-Bold').text(`TOTAL MARKS: ${assignment.totalMarks}`, 400, currentY, { align: 'right' });
+      doc.fontSize(10).font('Helvetica-Bold').fillColor('#475569');
+      doc.text(`DATE: ${formattedDate}`, 50, currentY);
+      doc.text(`TIME: ${timeString}`, 50, currentY, { width: 495, align: 'center' });
+      doc.text(`TOTAL MARKS: ${assignment.totalMarks}`, 50, currentY, { width: 495, align: 'right' });
       doc.moveDown(1);
 
       // 3. Student Details Block (Box)
@@ -48,6 +68,7 @@ export const generateAssignmentPDF = (assignment: IAssignment): Promise<string> 
       doc.text('SEC: ______', 470, boxY + 12);
       
       // Reset doc coordinates below the box
+      doc.x = 50;
       doc.y = boxY + 35;
       doc.moveDown(1.2);
 
@@ -55,12 +76,27 @@ export const generateAssignmentPDF = (assignment: IAssignment): Promise<string> 
       doc.fontSize(11).font('Helvetica-Bold').fillColor('#0f172a').text('GENERAL INSTRUCTIONS:');
       doc.fontSize(9.5).font('Helvetica-Oblique').fillColor('#475569');
       
+      let cleanInstructions = assignment.additionalInstructions || '';
+      
+      // Strip out the system prompt leaks from the frontend
+      if (cleanInstructions.includes('[EXAM STRUCTURE REQUEST]')) {
+        const userGuideIdx = cleanInstructions.indexOf('[ADDITIONAL USER GUIDELINES]:');
+        if (userGuideIdx !== -1) {
+          cleanInstructions = cleanInstructions.substring(userGuideIdx + '[ADDITIONAL USER GUIDELINES]:'.length).trim();
+        } else {
+          cleanInstructions = '';
+        }
+      }
+      
+      // Remove time prompt if present
+      cleanInstructions = cleanInstructions.replace(/Generate for \d+(?:\.\d+)?\s*hours?(?: exam)?\.?/ig, '').trim();
+
       const defaultInst = '1. Read all questions carefully before answering.\n2. Write your answers neatly in the space provided.\n3. Verify all code syntax or reasoning steps where requested.';
-      const instructions = assignment.additionalInstructions 
-        ? `${assignment.additionalInstructions}\n${defaultInst}` 
+      const instructions = cleanInstructions 
+        ? `${cleanInstructions}\n${defaultInst}` 
         : defaultInst;
         
-      doc.text(instructions, { lineGap: 3 });
+      doc.text(cleanText(instructions), 50, doc.y, { lineGap: 3, width: 495, align: 'left' });
       doc.moveDown(1.5);
 
       // Divider Line
@@ -74,8 +110,8 @@ export const generateAssignmentPDF = (assignment: IAssignment): Promise<string> 
           doc.addPage();
         }
 
-        doc.fontSize(13).font('Helvetica-Bold').fillColor('#1e3a8a').text(section.title.toUpperCase());
-        doc.fontSize(9.5).font('Helvetica-Oblique').fillColor('#475569').text(section.instruction);
+        doc.fontSize(13).font('Helvetica-Bold').fillColor('#1e3a8a').text(cleanText(section.title).toUpperCase(), 50, doc.y, { width: 495, align: 'left' });
+        doc.fontSize(9.5).font('Helvetica-Oblique').fillColor('#475569').text(cleanText(section.instruction), 50, doc.y, { width: 495, align: 'left' });
         doc.moveDown(0.8);
 
         section.questions.forEach((q, qIndex) => {
@@ -88,29 +124,28 @@ export const generateAssignmentPDF = (assignment: IAssignment): Promise<string> 
           const difficultyLabel = `[${q.difficulty}]`;
           const marksLabel = `[${q.marks} Mark${q.marks > 1 ? 's' : ''}]`;
           
-          // Question text
-          doc.fontSize(10.5).font('Helvetica').fillColor('#0f172a');
+          const startY = doc.y;
           
-          // Render question text. Align marks to the right margin
-          const qTextY = doc.y;
-          doc.text(`${qNum}${q.text}`, 50, qTextY, {
-            width: 390,
-            lineGap: 2
-          });
-          
-          // Render difficulty badge and marks aligned right
+          // Render difficulty badge and marks aligned right FIRST
           doc.fontSize(9.5).font('Helvetica-Bold').fillColor('#059669'); // Green for Easy by default
           if (q.difficulty === 'Moderate') doc.fillColor('#d97706'); // Amber
           if (q.difficulty === 'Hard') doc.fillColor('#dc2626'); // Red
           
-          doc.text(difficultyLabel, 445, qTextY, { width: 50, align: 'right' });
+          doc.text(difficultyLabel, 445, startY, { width: 50, align: 'right' });
           
           doc.font('Helvetica-Bold').fillColor('#475569');
-          doc.text(marksLabel, 495, qTextY, { width: 50, align: 'right' });
+          doc.text(marksLabel, 495, startY, { width: 50, align: 'right' });
+
+          // Render question text. Align marks to the right margin
+          doc.fontSize(10.5).font('Helvetica').fillColor('#0f172a');
+          doc.text(cleanText(`${qNum}${q.text}`), 50, startY, {
+            width: 390,
+            align: 'left',
+            lineGap: 2
+          });
           
-          // Update doc Y to the max height between question text and side labels
-          const finalY = doc.y;
-          doc.y = Math.max(finalY, qTextY) + 6;
+          // doc.y naturally tracks the bottom of the question text now
+          doc.y += 6;
 
           // Render options if MCQ
           if (q.options && q.options.length > 0) {
@@ -119,7 +154,9 @@ export const generateAssignmentPDF = (assignment: IAssignment): Promise<string> 
                 doc.addPage();
               }
               const label = String.fromCharCode(97 + oIndex); // a, b, c, d
-              doc.fontSize(10).font('Helvetica').fillColor('#334155').text(`    (${label})  ${opt}`, 65, doc.y, {
+              doc.fontSize(10).font('Helvetica').fillColor('#334155').text(cleanText(`    (${label})  ${opt}`), 65, doc.y, {
+                width: 480,
+                align: 'left',
                 lineGap: 1
               });
             });

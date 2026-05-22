@@ -23,7 +23,9 @@ graph TD
     %% Background Workers
     E -->|5. Process Job| F[Question Generation Worker]
     F -->|6. Parse File & Call AI| G[Gemini 1.5 Flash API]
-    G -->|7. Return Structured JSON| F
+    G -->|7. Return Raw JSON| Z{Zod Schema Validator}
+    Z -->|Valid: Pass data| F
+    Z -->|Invalid: Trigger Fallback| F
     F -->|8. Save Questions & Update DB| D
     F -->|9. Push Task 'pdf'| H[BullMQ: pdf-generation Queue]
     F -->|10. Broadcast Progress 60%| C

@@ -35,16 +35,21 @@ export default function LayoutWrapper({
     }
   }, [toastMessage, setToastMessage]);
 
-  const handleTabClick = (tabName: string) => {
-    if (tabName === 'Assignments') {
-      setViewState('list');
-      router.push('/');
-    }
+  const getPageTitle = () => {
+    if (pathname === '/home') return 'Home';
+    if (pathname === '/groups') return 'My Groups';
+    if (pathname === '/toolkit') return "AI Teacher's Toolkit";
+    if (pathname === '/library') return 'My Library';
+    if (pathname.startsWith('/assignment')) return 'Assignment Details';
+    if (viewState === 'create') return 'Create Assignment';
+    return 'Assignments';
   };
 
-  const isHomeActive = false;
-  const isAssignmentsActive = pathname === '/' && viewState === 'list';
+  const isHomeActive = pathname === '/home';
+  const isAssignmentsActive = (pathname === '/' && viewState === 'list') || pathname.startsWith('/assignment');
   const isCreateActive = pathname === '/' && viewState === 'create';
+  const isLibraryActive = pathname === '/library';
+  const isToolkitActive = pathname === '/toolkit';
 
   return (
     <div className="flex flex-col md:flex-row min-h-screen bg-brand-warm relative">
@@ -58,47 +63,55 @@ export default function LayoutWrapper({
         <div className="w-full px-4 pt-4 md:px-8 md:pt-6 no-print">
           <div className="bg-white rounded-2xl md:rounded-3xl border border-slate-200/80 px-4 md:px-6 py-2.5 flex items-center justify-between shadow-sm">
             
-            {/* Left Side: Dynamic back button or mobile logo */}
-            {!(pathname === '/' && viewState === 'list') ? (
-              <div className="flex items-center gap-3">
-                <button
-                  onClick={() => {
-                    if (pathname.startsWith('/assignment')) {
-                      setViewState('list');
-                      router.push('/');
-                    } else if (viewState === 'create') {
-                      setViewState('list');
-                    }
-                  }}
-                  className="w-8 h-8 rounded-full border border-slate-200 text-slate-600 flex items-center justify-center hover:bg-slate-50 transition cursor-pointer shadow-sm shrink-0"
-                >
-                  <ArrowLeft className="w-4 h-4 stroke-[2.5]" />
-                </button>
-                <span className="text-slate-400 font-extrabold text-sm tracking-tight">
-                  Assignment
-                </span>
-              </div>
-            ) : (
-              /* Logo (Visible on mobile header always, on desktop hide to prevent duplication since sidebar is open) */
-              <div className="md:hidden">
-                <div 
-                  onClick={() => {
-                    setViewState('list');
-                    router.push('/');
-                  }}
-                  className="flex items-center gap-2 cursor-pointer select-none"
-                >
-                  <div className="w-8 h-8 rounded-lg bg-[#1A1A1A] flex items-center justify-center text-white font-extrabold text-xs shadow-md border border-slate-800">
-                    <svg viewBox="0 0 100 100" className="w-4 h-4 fill-white font-black">
-                      <path d="M15,15 L45,85 L55,85 L85,15 L70,15 L50,65 L30,15 Z" />
-                    </svg>
-                  </div>
-                  <span className="font-outfit font-black text-lg tracking-tight text-brand-dark">
-                    Veda<span className="font-medium text-slate-800">AI</span>
+            {/* Left Side: Dynamic back button, page title, or mobile logo */}
+            <div className="flex items-center gap-3">
+              {(pathname.startsWith('/assignment') || (pathname === '/' && viewState === 'create')) ? (
+                <>
+                  <button
+                    onClick={() => {
+                      if (pathname.startsWith('/assignment')) {
+                        setViewState('list');
+                        router.push('/');
+                      } else if (viewState === 'create') {
+                        setViewState('list');
+                      }
+                    }}
+                    className="w-8 h-8 rounded-full border border-slate-200 text-slate-600 flex items-center justify-center hover:bg-slate-50 transition cursor-pointer shadow-sm shrink-0"
+                  >
+                    <ArrowLeft className="w-4 h-4 stroke-[2.5]" />
+                  </button>
+                  <span className="text-slate-400 font-extrabold text-sm tracking-tight">
+                    {getPageTitle()}
                   </span>
-                </div>
-              </div>
-            )}
+                </>
+              ) : (
+                <>
+                  {/* Logo (Visible on mobile header always, on desktop hide to prevent duplication since sidebar is open) */}
+                  <div className="md:hidden">
+                    <div 
+                      onClick={() => {
+                        setViewState('list');
+                        router.push('/');
+                      }}
+                      className="flex items-center gap-2 cursor-pointer select-none"
+                    >
+                      <div className="w-8 h-8 rounded-lg bg-[#1A1A1A] flex items-center justify-center text-white font-extrabold text-xs shadow-md border border-slate-800">
+                        <svg viewBox="0 0 100 100" className="w-4 h-4 fill-white font-black">
+                          <path d="M15,15 L45,85 L55,85 L85,15 L70,15 L50,65 L30,15 Z" />
+                        </svg>
+                      </div>
+                      <span className="font-outfit font-black text-lg tracking-tight text-brand-dark">
+                        Veda<span className="font-medium text-slate-800">AI</span>
+                      </span>
+                    </div>
+                  </div>
+                  {/* Page Title on Desktop */}
+                  <span className="hidden md:inline text-slate-800 font-black text-lg font-outfit tracking-tight">
+                    {getPageTitle()}
+                  </span>
+                </>
+              )}
+            </div>
 
             {/* Right Side Tools */}
             <div className="flex items-center gap-3">
@@ -152,15 +165,18 @@ export default function LayoutWrapper({
         <div className="md:hidden fixed bottom-5 left-4 right-4 z-40 bg-[#1A1A1A] text-slate-400 rounded-full px-6 py-2.5 flex items-center justify-between shadow-2xl border border-slate-800/40 no-print">
           
           <button 
-            onClick={() => setToastMessage("Home dashboard is coming soon!")}
-            className="flex flex-col items-center gap-0.5 text-slate-500 hover:text-slate-300 transition cursor-pointer"
+            onClick={() => router.push('/home')}
+            className={`flex flex-col items-center gap-0.5 transition cursor-pointer ${isHomeActive ? 'text-white' : 'text-slate-500 hover:text-slate-300'}`}
           >
             <LayoutGrid className="w-4 h-4" />
             <span className="text-[9px] font-bold">Home</span>
           </button>
 
           <button 
-            onClick={() => handleTabClick('Assignments')}
+            onClick={() => {
+              setViewState('list');
+              router.push('/');
+            }}
             className={`flex flex-col items-center gap-0.5 transition cursor-pointer ${isAssignmentsActive || isCreateActive ? 'text-white' : 'text-slate-500 hover:text-slate-300'}`}
           >
             <FileText className="w-4 h-4" />
@@ -168,16 +184,16 @@ export default function LayoutWrapper({
           </button>
 
           <button 
-            onClick={() => setToastMessage("Library section is coming soon!")}
-            className="flex flex-col items-center gap-0.5 text-slate-500 hover:text-slate-300 transition cursor-pointer"
+            onClick={() => router.push('/library')}
+            className={`flex flex-col items-center gap-0.5 transition cursor-pointer ${isLibraryActive ? 'text-white' : 'text-slate-500 hover:text-slate-300'}`}
           >
             <FolderOpen className="w-4 h-4" />
             <span className="text-[9px] font-bold">Library</span>
           </button>
 
           <button 
-            onClick={() => setToastMessage("AI Teacher's Toolkit is coming soon!")}
-            className="flex flex-col items-center gap-0.5 text-slate-500 hover:text-slate-300 transition cursor-pointer"
+            onClick={() => router.push('/toolkit')}
+            className={`flex flex-col items-center gap-0.5 transition cursor-pointer ${isToolkitActive ? 'text-white' : 'text-slate-500 hover:text-slate-300'}`}
           >
             <Briefcase className="w-4 h-4" />
             <span className="text-[9px] font-bold">AI Toolkit</span>

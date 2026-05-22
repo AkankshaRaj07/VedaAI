@@ -62,6 +62,7 @@ export default function Dashboard() {
   const [submitting, setSubmitting] = useState(false);
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
   const [generalError, setGeneralError] = useState<string | null>(null);
+  const [deleteModalId, setDeleteModalId] = useState<string | null>(null);
 
   // Search & Filter states
   const [searchQuery, setSearchQuery] = useState('');
@@ -151,15 +152,20 @@ export default function Dashboard() {
     setFile(selectedFile);
   };
 
-  const handleDelete = async (e: React.MouseEvent, id: string) => {
+  const handleDelete = (e: React.MouseEvent, id: string) => {
     e.stopPropagation();
     setActiveDropdownId(null);
-    if (confirm('Are you sure you want to delete this assessment? This cannot be undone.')) {
-      try {
-        await deleteAssignment(id);
-      } catch (err) {
-        alert(err instanceof Error ? err.message : 'Failed to delete assessment.');
-      }
+    setDeleteModalId(id);
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteModalId) return;
+    try {
+      await deleteAssignment(deleteModalId);
+    } catch (err) {
+      alert(err instanceof Error ? err.message : 'Failed to delete assessment.');
+    } finally {
+      setDeleteModalId(null);
     }
   };
 
@@ -976,6 +982,38 @@ ${additionalInstructions || 'None.'}`;
         </div>
       )}
 
+      {/* Delete Confirmation Modal */}
+      {deleteModalId && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm">
+          <div className="bg-white rounded-3xl p-4 md:p-5 max-w-sm w-full shadow-2xl border border-slate-200 flex flex-col">
+            <div className="flex items-start gap-3 mb-4">
+              <div className="w-10 h-10 rounded-full bg-rose-50 flex items-center justify-center shrink-0 mt-0.5">
+                <Trash2 className="w-5 h-5 text-[#E05058]" />
+              </div>
+              <div>
+                <h3 className="text-lg font-black font-outfit text-brand-dark mb-0.5">Delete Assessment</h3>
+                <p className="text-[13px] font-semibold text-slate-500 leading-snug">
+                  Are you sure you want to delete this assessment? This action cannot be undone.
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-100">
+              <button
+                onClick={() => setDeleteModalId(null)}
+                className="px-4 py-2 rounded-full text-xs font-extrabold text-slate-600 bg-slate-100 hover:bg-slate-200 transition cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmDelete}
+                className="px-4 py-2 rounded-full text-xs font-extrabold text-white bg-[#E05058] hover:bg-[#c83c44] transition shadow-sm shadow-[#E05058]/20 cursor-pointer"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -4,12 +4,12 @@ import fs from 'fs';
 import Assignment from '../models/Assignment';
 import { questionQueue, pdfQueue } from '../queues/generationQueue';
 import { emitJobStatus } from '../services/websocket';
+import { asyncHandler } from '../utils/asyncHandler';
 
 /**
  * Create a new assignment and queue it for AI generation
  */
-export const createAssignment = async (req: Request, res: Response) => {
-  try {
+export const createAssignment = asyncHandler(async (req: Request, res: Response) => {
     const { title, dueDate, questionTypes, numQuestions, totalMarks, additionalInstructions } = req.body;
 
     // Simple validations
@@ -67,47 +67,32 @@ export const createAssignment = async (req: Request, res: Response) => {
     console.log(`[API] Created assignment ${assignment._id} and queued job: ${job.id}`);
 
     res.status(201).json(assignment);
-  } catch (error: any) {
-    console.error('Error creating assignment:', error);
-    res.status(500).json({ error: error.message || 'Server error occurred while creating assignment.' });
-  }
-};
+});
 
 /**
  * Get a single assignment detail
  */
-export const getAssignment = async (req: Request, res: Response) => {
-  try {
+export const getAssignment = asyncHandler(async (req: Request, res: Response) => {
     const { id } = req.params;
     const assignment = await Assignment.findById(id);
     if (!assignment) {
       return res.status(404).json({ error: 'Assignment not found.' });
     }
     res.json(assignment);
-  } catch (error: any) {
-    console.error('Error fetching assignment:', error);
-    res.status(500).json({ error: error.message || 'Server error fetching assignment.' });
-  }
-};
+});
 
 /**
  * List all assignments
  */
-export const listAssignments = async (req: Request, res: Response) => {
-  try {
+export const listAssignments = asyncHandler(async (req: Request, res: Response) => {
     const assignments = await Assignment.find().sort({ createdAt: -1 });
     res.json(assignments);
-  } catch (error: any) {
-    console.error('Error listing assignments:', error);
-    res.status(500).json({ error: error.message || 'Server error listing assignments.' });
-  }
-};
+});
 
 /**
  * Re-trigger question generation
  */
-export const regenerateAssignment = async (req: Request, res: Response) => {
-  try {
+export const regenerateAssignment = asyncHandler(async (req: Request, res: Response) => {
     const { id } = req.params;
     const assignment = await Assignment.findById(id);
     if (!assignment) {
@@ -137,17 +122,12 @@ export const regenerateAssignment = async (req: Request, res: Response) => {
     emitJobStatus(assignment._id.toString(), 'pending', 0);
 
     res.json(assignment);
-  } catch (error: any) {
-    console.error('Error regenerating assignment:', error);
-    res.status(500).json({ error: error.message || 'Server error regenerating assignment.' });
-  }
-};
+});
 
 /**
  * Update assignment questions directly (inline edits) and rebuild PDF
  */
-export const updateAssignment = async (req: Request, res: Response) => {
-  try {
+export const updateAssignment = asyncHandler(async (req: Request, res: Response) => {
     const { id } = req.params;
     const { sections, title, dueDate } = req.body;
 
@@ -174,17 +154,12 @@ export const updateAssignment = async (req: Request, res: Response) => {
     emitJobStatus(assignment._id.toString(), 'processing', 75);
 
     res.json(assignment);
-  } catch (error: any) {
-    console.error('Error updating assignment:', error);
-    res.status(500).json({ error: error.message || 'Server error updating assignment.' });
-  }
-};
+});
 
 /**
  * Delete a single assignment and clean up its files
  */
-export const deleteAssignment = async (req: Request, res: Response) => {
-  try {
+export const deleteAssignment = asyncHandler(async (req: Request, res: Response) => {
     const { id } = req.params;
     const assignment = await Assignment.findById(id);
     if (!assignment) {
@@ -217,8 +192,4 @@ export const deleteAssignment = async (req: Request, res: Response) => {
     await Assignment.findByIdAndDelete(id);
     console.log(`[API] Deleted assignment ${id}`);
     res.json({ message: 'Assignment deleted successfully.' });
-  } catch (error: any) {
-    console.error('Error deleting assignment:', error);
-    res.status(500).json({ error: error.message || 'Server error deleting assignment.' });
-  }
-};
+});

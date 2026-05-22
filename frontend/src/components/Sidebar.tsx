@@ -51,11 +51,11 @@ export default function Sidebar() {
   const { sidebarOpen, setSidebarOpen, viewState, setViewState, setToastMessage } = useAssignmentStore();
 
   const navItems = [
-    { name: 'Home', icon: LayoutGrid, path: '#', active: false },
-    { name: 'My Groups', icon: Users, path: '#', active: false },
+    { name: 'Home', icon: LayoutGrid, path: '/home', active: pathname === '/home' },
+    { name: 'My Groups', icon: Users, path: '/groups', active: pathname === '/groups' },
     { name: 'Assignments', icon: FileText, path: '/', active: pathname === '/' || pathname.startsWith('/assignment') },
-    { name: 'AI Teacher\'s Toolkit', icon: Briefcase, path: '#', active: false },
-    { name: 'My Library', icon: FolderOpen, path: '#', active: false }
+    { name: 'AI Teacher\'s Toolkit', icon: Briefcase, path: '/toolkit', active: pathname === '/toolkit' },
+    { name: 'My Library', icon: FolderOpen, path: '/library', active: pathname === '/library' }
   ];
 
   const handleNewAssignment = () => {

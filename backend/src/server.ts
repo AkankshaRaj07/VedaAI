@@ -6,9 +6,24 @@ import dotenv from 'dotenv';
 import { connectDB } from './config/db';
 import { initWebSocket } from './services/websocket';
 import assignmentRoutes from './routes/assignmentRoutes';
+import submissionRoutes from './routes/submissionRoutes';
+import groupRoutes from './routes/groupRoutes';
+import libraryRoutes from './routes/libraryRoutes';
+import toolkitRoutes from './routes/toolkitRoutes';
+import dashboardRoutes from './routes/dashboardRoutes';
 
 // Load environment variables
 dotenv.config();
+
+// Environment Validation
+const requiredEnvVars = ['PORT', 'MONGODB_URI', 'GEMINI_API_KEY'];
+const missingEnvVars = requiredEnvVars.filter(envVar => !process.env[envVar]);
+
+if (missingEnvVars.length > 0) {
+  console.error(`[CRITICAL ERROR] Missing required environment variables: ${missingEnvVars.join(', ')}`);
+  console.error('Server failed to start due to missing configuration. Exiting...');
+  process.exit(1);
+}
 
 // Boot up BullMQ workers
 import { initWorkers } from './workers/generationWorker';
@@ -32,6 +47,11 @@ app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
 // Routes
 app.use('/api/assignments', assignmentRoutes);
+app.use('/api/submissions', submissionRoutes);
+app.use('/api/groups', groupRoutes);
+app.use('/api/library', libraryRoutes);
+app.use('/api/toolkit', toolkitRoutes);
+app.use('/api/dashboard', dashboardRoutes);
 
 // Health check endpoint
 app.get('/health', (req, res) => {
