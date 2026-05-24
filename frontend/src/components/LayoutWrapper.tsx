@@ -30,7 +30,7 @@ export default function LayoutWrapper({
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const { sidebarOpen, setSidebarOpen, viewState, setViewState, toastMessage, setToastMessage, darkMode, setDarkMode, userName, userEmail, userAvatar } = useAssignmentStore();
+  const { sidebarOpen, setSidebarOpen, viewState, setViewState, toastMessage, setToastMessage, darkMode, setDarkMode, userName, userEmail, userAvatar, buildingModalOpen, setBuildingModalOpen } = useAssignmentStore();
   
   // Notifications State
   const [showNotifications, setShowNotifications] = React.useState(false);
@@ -347,6 +347,29 @@ export default function LayoutWrapper({
         <div className="fixed bottom-24 right-4 md:bottom-8 md:right-8 z-50 animate-float bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 text-slate-800 dark:text-white rounded-2xl px-5 py-3 shadow-lg flex items-center gap-2.5 max-w-sm transition-all duration-300 no-print">
           <div className={`w-2 h-2 rounded-full ${toastMessage.toLowerCase().includes('success') ? 'bg-[#10B981]' : 'bg-[#E05058]'} shrink-0 animate-pulse`}></div>
           <span className="text-xs font-bold tracking-tight">{toastMessage}</span>
+        </div>
+      )}
+
+      {/* Global "Still Building" Modal */}
+      {buildingModalOpen && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fadeIn">
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 md:p-8 max-w-sm w-full shadow-2xl transition-colors text-center">
+            <div className="w-16 h-16 mx-auto bg-slate-50 dark:bg-slate-800 rounded-full flex items-center justify-center mb-4 transition-colors">
+              <Sparkles className="w-8 h-8 text-[#E05058]" />
+            </div>
+            <h3 className="text-xl font-black font-outfit text-brand-dark dark:text-white mb-2 transition-colors">
+              Still Building
+            </h3>
+            <p className="text-sm font-semibold text-slate-500 dark:text-slate-400 mb-6 transition-colors">
+              We're currently working hard on this feature. Check back soon!
+            </p>
+            <button
+              onClick={() => setBuildingModalOpen(false)}
+              className="w-full px-5 py-3 rounded-full text-xs font-bold text-white bg-[#E05058] hover:bg-red-600 shadow-sm transition cursor-pointer"
+            >
+              Close
+            </button>
+          </div>
         </div>
       )}
     </div>

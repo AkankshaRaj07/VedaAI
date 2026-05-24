@@ -125,6 +125,7 @@ interface AssignmentState {
   sidebarOpen: boolean;
   viewState: 'list' | 'create';
   toastMessage: string | null;
+  buildingModalOpen: boolean;
   
   // Submissions states
   submissions: ISubmission[];
@@ -147,6 +148,7 @@ interface AssignmentState {
   setSidebarOpen: (open: boolean) => void;
   setViewState: (view: 'list' | 'create') => void;
   setToastMessage: (msg: string | null) => void;
+  setBuildingModalOpen: (open: boolean) => void;
   setSubmissions: (submissions: ISubmission[]) => void;
   setActiveSubmission: (submission: ISubmission | null) => void;
   
@@ -225,6 +227,7 @@ export const useAssignmentStore = create<AssignmentState>()(
       sidebarOpen: false,
       viewState: 'list',
       toastMessage: null,
+      buildingModalOpen: false,
       
       submissions: [],
       activeSubmission: null,
@@ -244,6 +247,7 @@ export const useAssignmentStore = create<AssignmentState>()(
       setSidebarOpen: (sidebarOpen) => set({ sidebarOpen }),
       setViewState: (viewState) => set({ viewState }),
       setToastMessage: (toastMessage) => set({ toastMessage }),
+      setBuildingModalOpen: (buildingModalOpen) => set({ buildingModalOpen }),
       setSubmissions: (submissions) => set({ submissions }),
       setActiveSubmission: (activeSubmission) => set({ activeSubmission }),
 

@@ -25,6 +25,7 @@ export default function LibraryPage() {
     uploadLibraryMaterial, 
     deleteLibraryMaterial, 
     setToastMessage,
+    setBuildingModalOpen,
     loading 
   } = useAssignmentStore();
 
@@ -251,15 +252,13 @@ export default function LibraryPage() {
                         {/* Actions */}
                         <td className="px-6 py-6 text-right">
                           <div className="flex justify-end gap-3">
-                            <a
-                              href={doc.fileUrl ? (doc.fileUrl.startsWith('http') ? doc.fileUrl : `${BACKEND_BASE}${doc.fileUrl}`) : '#'}
-                              target="_blank"
-                              rel="noreferrer"
+                            <button
+                              onClick={() => setBuildingModalOpen(true)}
                               className="p-1.5 rounded-lg text-slate-400 hover:text-brand-dark dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800 transition cursor-pointer"
                               title="Preview File"
                             >
                               <ExternalLink className="w-4.5 h-4.5" />
-                            </a>
+                            </button>
                             <button
                               onClick={() => handleDeleteItem(doc._id, doc.name)}
                               className="p-1.5 rounded-lg text-slate-400 hover:text-brand-primary dark:hover:text-brand-primary hover:bg-rose-50 dark:hover:bg-rose-500/10 transition cursor-pointer"
