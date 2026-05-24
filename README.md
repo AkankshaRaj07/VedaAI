@@ -1,5 +1,4 @@
 <div align="center">
-  <img src="frontend/public/vedaai-logo-new.svg" alt="VedaAI Logo" width="200"/>
   <h1>VedaAI – AI Assessment Creator</h1>
   <p><strong>Full Stack Engineering Assignment</strong></p>
   
