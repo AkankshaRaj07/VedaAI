@@ -162,8 +162,8 @@ The backend REST API is structurally modularized. Below are the core endpoints:
 
 1. **Clone the Repository:**
    ```bash
-   git clone https://github.com/AkankshaRaj07/EduGenie.git
-   cd EduGenie
+   git clone https://github.com/AkankshaRaj07/VedaAI.git
+   cd VedaAI
    ```
 
 2. **Backend Setup:**
@@ -174,7 +174,7 @@ The backend REST API is structurally modularized. Below are the core endpoints:
    Create a `.env` file in the `backend` directory:
    ```env
    PORT=5000
-   MONGODB_URI=mongodb://localhost:27017/edugenie
+   MONGODB_URI=mongodb://localhost:27017/vedaai
    REDIS_HOST=localhost
    REDIS_PORT=6379
    GEMINI_API_KEY=your_gemini_api_key_here

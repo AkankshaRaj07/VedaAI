@@ -662,7 +662,7 @@ export const useAssignmentStore = create<AssignmentState>()(
       }
     }),
     {
-      name: 'edugenie-settings',
+      name: 'vedaai-settings',
       partialize: (state) => ({
         userName: state.userName,
         userEmail: state.userEmail,

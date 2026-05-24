@@ -1,5 +1,5 @@
 {
-  "name": "edugenie-backend",
+  "name": "vedaai-backend",
   "version": "1.0.0",
   "description": "Backend API and queue processing service for VedaAI AI Assessment Creator",
   "main": "dist/server.js",
