@@ -35,32 +35,17 @@ We strictly adhered to the assignment rubric and successfully implemented every 
 
 Beyond the core rubric, this project implements advanced features expected in enterprise SaaS applications:
 
-### 🌙 Dark Mode Support
-A fully integrated dark theme that dynamically switches based on user preference for a sleek, modern look.
-
-### 🎙️ Voice Assistance (Speech-to-Text)
-Teachers can use their microphone to dictate the "Additional Instructions" natively within the Assignment Creation form!
-
-### 📝 Advanced Assignment Editing
-Generated assignments aren't static. Teachers can **Regenerate** the paper, perform **Manual Edits** on specific questions, and select specific **Classes & Subjects** during creation. Instead of complex document uploads, teachers can instantly **Paste Reference Text** for the AI to base questions on.
-
-### 🎮 Interactive "Take Quiz" & View Responses
-Converts the static exam paper into an interactive digital quiz. Students can take the test directly in the browser, and teachers can view all submitted responses natively within the app.
-
-### 🛠️ AI Teacher's Toolkit
-A standalone suite featuring a **Lesson Plan Generator**, **Question Bank Builder**, and **Feedback Enhancer** to automate daily teaching tasks.
-
-### 🏠 Homepage & Groups
-Includes a dedicated navigational Home page. Teachers can also "Create Groups" (currently a frontend-only implementation, ready to be wired up to the backend in the future).
-
-### ⚙️ Comprehensive Settings
-A robust Settings profile page allowing users to instantly edit their Name, Email, Avatar, and School Name (which is dynamically fetched and updated across the app).
-
-### 🖨️ Native Programmatic PDF Generation
-Built a custom `PDFKit` engine on the backend that mathematically draws the exam paper, creates structured headers (Name/Roll Number), and properly paginates the output. It avoids lazy `window.print()` hacks.
-
-### ☁️ Ephemeral Cloud Storage Resilience
-Engineered a dynamic fallback endpoint (`/api/assignments/:id/download`). If a cloud host (like Render) wipes the temporary PDF from its disk, the backend instantly regenerates the file on the fly from the database before downloading.
+| Feature | Description |
+| :--- | :--- |
+| 🌙 **Dark Mode Support** | A fully integrated dark theme that dynamically switches based on user preference for a sleek, modern look. |
+| 🎙️ **Voice Assistance (Speech-to-Text)** | Teachers can use their microphone to dictate the "Additional Instructions" natively within the Assignment Creation form! |
+| 📝 **Advanced Assignment Editing** | Generated assignments aren't static. Teachers can **Regenerate** the paper, perform **Manual Edits** on specific questions, and select specific **Classes & Subjects** during creation. Instead of complex document uploads, teachers can instantly **Paste Reference Text** for the AI to base questions on. |
+| 🎮 **Interactive "Take Quiz" & View Responses** | Converts the static exam paper into an interactive digital quiz. Students can take the test directly in the browser, and teachers can view all submitted responses natively within the app. |
+| 🛠️ **AI Teacher's Toolkit** | A standalone suite featuring a **Lesson Plan Generator**, **Question Bank Builder**, and **Feedback Enhancer** to automate daily teaching tasks. |
+| 🏠 **Homepage & Groups** | Includes a dedicated navigational Home page. Teachers can also "Create Groups" (currently a frontend-only implementation, ready to be wired up to the backend in the future). |
+| ⚙️ **Comprehensive Settings** | A robust Settings profile page allowing users to instantly edit their Name, Email, Avatar, and School Name (which is dynamically fetched and updated across the app). |
+| 🖨️ **Native Programmatic PDF Generation** | Built a custom `PDFKit` engine on the backend that mathematically draws the exam paper, creates structured headers (Name/Roll Number), and properly paginates the output. It avoids lazy `window.print()` hacks. |
+| ☁️ **Ephemeral Cloud Storage Resilience** | Engineered a dynamic fallback endpoint (`/api/assignments/:id/download`). If a cloud host (like Render) wipes the temporary PDF from its disk, the backend instantly regenerates the file on the fly from the database before downloading. |
 
 ---
 
