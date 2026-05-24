@@ -1,23 +1,31 @@
 <div align="center">
-  <h1>✨ VedaAI – AI Assessment Creator</h1>
-  <p><strong>Next-Generation EdTech Platform | Full Stack Engineering Assignment</strong></p>
-  <a href="https://vedaai-5ro9.onrender.com/"><strong>🔗 View Live Application</strong></a>
+  <img src="frontend/public/vedaai-logo-new.svg" alt="VedaAI Logo" width="120" />
+  <h1>VedaAI • AI Assessment Creator</h1>
+  
   <p>
-    <img src="https://img.shields.io/badge/Next.js_14-black?style=for-the-badge&logo=next.js" alt="Next.js" />
-    <img src="https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript" />
-    <img src="https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white" alt="Node.js" />
-    <img src="https://img.shields.io/badge/MongoDB-47A248?style=for-the-badge&logo=mongodb&logoColor=white" alt="MongoDB" />
-    <img src="https://img.shields.io/badge/Redis-DC382D?style=for-the-badge&logo=redis&logoColor=white" alt="Redis" />
+    <strong>A highly scalable, production-ready assessment engine built for modern educators.</strong><br/>
+    <em>Full Stack Engineering Assignment Submission</em>
   </p>
+  
+  <a href="https://vedaai-5ro9.onrender.com/">
+    <img src="https://img.shields.io/badge/View_Live_Application-000000?style=for-the-badge&logo=vercel&logoColor=white" alt="Live Demo" />
+  </a>
+  <br/><br/>
+
+  <img src="https://img.shields.io/badge/Next.js_14-black?style=flat-square&logo=next.js" alt="Next.js" />
+  <img src="https://img.shields.io/badge/TypeScript-007ACC?style=flat-square&logo=typescript&logoColor=white" alt="TypeScript" />
+  <img src="https://img.shields.io/badge/Node.js-339933?style=flat-square&logo=nodedotjs&logoColor=white" alt="Node.js" />
+  <img src="https://img.shields.io/badge/BullMQ-FF4A00?style=flat-square&logo=redis&logoColor=white" alt="BullMQ" />
+  <img src="https://img.shields.io/badge/Google_Gemini-8E75B2?style=flat-square&logo=google&logoColor=white" alt="Gemini" />
 </div>
 
 ---
 
-## 📌 Overview
+## 📌 Executive Summary
 
-**VedaAI** is a robust, production-ready AI Assessment Creator built to exceed the rigorous requirements of a Full Stack Engineering Assignment. It empowers educators to effortlessly generate fully structured, curriculum-aligned exam papers and interactive quizzes using advanced Generative AI.
+**VedaAI** is not just an API wrapper; it is an enterprise-grade EdTech platform engineered for high concurrency and heavy LLM workloads. It empowers educators to effortlessly generate fully structured, curriculum-aligned exam papers and interactive quizzes.
 
-This project is engineered to scale. It moves far beyond standard API wrapping by implementing a **decoupled background worker architecture** (BullMQ & Redis) to securely manage high-latency AI inference. Combined with natively drawn **programmatic PDF generation** and **WebSocket-driven real-time UX updates**, VedaAI represents a true enterprise-grade solution.
+By decoupling the AI inference via **BullMQ/Redis background workers**, rendering **native A4 PDFs programmatically via PDFKit**, and driving the UX with **WebSockets**, VedaAI delivers a flawless, real-time user experience without risking HTTP timeouts or frozen browsers.
 
 ---
 
@@ -55,12 +63,15 @@ Beyond the core rubric, this project implements advanced features expected in en
 
 ---
 
-## 🏗️ Architecture & Flow
+## 🏗️ System Architecture & Data Flow
 
-The system employs a decoupled, asynchronous processing pattern to guarantee reliability during high-latency LLM generation.
+VedaAI utilizes three core architectural pillars to ensure enterprise-grade stability and user experience:
+
+### 1. Asynchronous AI Generation Flow (Backend)
+The system employs a decoupled processing pattern to guarantee reliability during high-latency LLM generation.
 
 <div align="center">
-  <img src="assets/architecture.png" alt="Architecture Diagram" />
+  <img src="assets/aigenflow.png" alt="AI Generation Sequence Diagram" />
 </div>
 
 1. **Client Request:** User submits the assignment form. The frontend makes a POST request to `/api/assignments`.
@@ -69,6 +80,16 @@ The system employs a decoupled, asynchronous processing pattern to guarantee rel
 4. **WebSocket Sync:** During processing, the worker emits granular progress events (`job_progress`) over WebSockets. The React frontend listens to this channel and renders a dynamic loading progress bar.
 5. **PDF Compilation:** Once the AI returns the JSON, the worker programmatically draws the PDF using `PDFKit` and saves it to the disk.
 6. **Completion:** The MongoDB document is marked "Completed", and the final WebSocket event triggers the frontend to reveal the rendered exam paper.
+
+### 2. Global System Architecture
+<div align="center">
+  <img src="assets/architecture.png" alt="Global System Architecture" />
+</div>
+
+### 3. Frontend React Architecture
+<div align="center">
+  <img src="assets/frontendarchitecture.png" alt="Frontend React Architecture" />
+</div>
 
 ---
 
